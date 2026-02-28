@@ -13,6 +13,47 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  /* The following classes are subjected to change based on CAN IDs */
+
+  public static class SwerveDriveConstants {
+    public static final int kFrontLeftDrivePort = 2;
+    public static final int kFrontLeftRotPort = 3;
+    public static final int kFrontRightDrivePort = 4;
+    public static final int kFrontRightRotPort = 5;
+
+    public static final int kBackLeftDrivePort = 6;
+    public static final int kBackLeftRotPort = 7;
+    public static final int kBackRightDrivePort = 8;
+    public static final int kBackRightRotPort = 9;
+
+    /* Given future growth */
+    public static final int kFrontLeftEncoder = -999;
+    public static final int kFrontRightEncoder = -999;
+
+    public static final int kBackLeftEncoder = -999;
+    public static final int kBackRightEncoder = -999;
+  }
+
+  public static class IntakeConstants {
+    public static final int kIntakeRollerPort = 10;
+    public static final int kIntakeDeployPort = 11;
+  }
+
+  public static class ClimberConstants {
+    public static final int kClimberPort = 12;
+
+    /* Given future growth */
+    public static final int kClimberDIO = -999;
+  }
+
+  public static class ShooterConstants {
+    public static final int kShooterIntakePort = 13;
+    public static final int kShooterLeftFlyWheelPort = 14;
+    public static final int kShooterRightFlyWheelPort = 15;
+    public static final int kShooterHoodPort = 16;
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
