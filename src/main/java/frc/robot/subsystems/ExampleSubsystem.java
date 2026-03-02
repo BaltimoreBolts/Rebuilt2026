@@ -4,10 +4,46 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class ExampleSubsystem extends SubsystemBase {
+
+  private SmartMotorControllerConfig smcConfig =
+      new SmartMotorControllerConfig(this)
+          .withControlMode(ControlMode.CLOSED_LOOP)
+          // Feedback Constants (PID Constants)
+          .withClosedLoopController(
+              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+          .withSimClosedLoopController(
+              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+          // Feedforward Constants
+          .withFeedforward(new ArmFeedforward(0, 0, 0))
+          .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+          // Telemetry name and verbosity level
+          .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
+          // Gearing from the motor rotor to final shaft.
+          // Change to actual pivot Gear Ratio
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          // Motor properties to prevent over currenting.
+          .withMotorInverted(false)
+          .withIdleMode(MotorMode.BRAKE)
+          .withStatorCurrentLimit(Amps.of(40))
+          .withClosedLoopRampRate(Seconds.of(0.25))
+          .withOpenLoopRampRate(Seconds.of(0.25));
+
   /** Creates a new ExampleSubsystem. */
   public ExampleSubsystem() {}
 
