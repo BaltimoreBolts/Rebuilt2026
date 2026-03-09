@@ -36,9 +36,16 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 
-public class ExampleSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
 
-   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+  private static final double INTAKE_SPEED = 1.0;
+
+
+
+
+  
+
+  private SmartMotorControllerConfig intakePivotSmartMotorConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
   // Feedback Constants (PID Constants)
   .withClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
@@ -47,24 +54,24 @@ public class ExampleSubsystem extends SubsystemBase {
   .withFeedforward(new ArmFeedforward(0, 0, 0))
   .withSimFeedforward(new ArmFeedforward(0, 0, 0))
   // Telemetry name and verbosity level
-  .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
+  .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
   // Gearing from the motor rotor to final shaft.
   // Change to actual pivot Gear Ratio
   .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
   // Motor properties to prevent over currenting.
   .withMotorInverted(false)
-  .withIdleMode(MotorMode.BRAKE)
-  .withStatorCurrentLimit(Amps.of(40))
-  .withClosedLoopRampRate(Seconds.of(0.25))
-  .withOpenLoopRampRate(Seconds.of(0.25));
+  .withIdleMode(MotorMode.COAST)
+  .withStatorCurrentLimit(Amps.of(10))
+  .withClosedLoopRampRate(Seconds.of(0.1))
+  .withOpenLoopRampRate(Seconds.of(0.1));
 
   // Vendor motor controller object
-  private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
+  private SparkMax spark = new SparkMax(11, MotorType.kBrushless);
 
    // Create our SmartMotorController from our Spark and config with the NEO.
-  private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
+  private SmartMotorController intakePivotController = new SparkWrapper(spark, DCMotor.getNEO(1), intakePivotSmartMotorConfig);
 
-   private ArmConfig armCfg = new ArmConfig(sparkSmartMotorController)
+   private ArmConfig intakePivotConfig = new ArmConfig(intakePivotController)
   // Soft limit is applied to the SmartMotorControllers PID
   .withSoftLimits(Degrees.of(0), Degrees.of(80))
   // Hard limit is applied to the simulation.
@@ -72,13 +79,13 @@ public class ExampleSubsystem extends SubsystemBase {
   // Starting position is where your arm starts
   .withStartingPosition(Degrees.of(80))
   // TODO: Add Real Length and Mass
-  .withLength(Feet.of(3))
-  .withMass(Pounds.of(1))
+  .withLength(Feet.of(1))
+  .withMass(Pounds.of(2))
   // Telemetry name and verbosity for the arm.
-  .withTelemetry("Arm", TelemetryVerbosity.HIGH);
+  .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH);
 
   // Arm Mechanism
-  private Arm arm = new Arm(armCfg);
+  private Arm intakePivot = new Arm(intakePivotConfig);
 
    /**
    * Set the angle of the arm, does not stop when the arm reaches the setpoint.
