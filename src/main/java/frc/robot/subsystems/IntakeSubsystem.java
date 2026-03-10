@@ -28,6 +28,8 @@ import yams.gearing.MechanismGearing;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.positional.Arm;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -198,9 +200,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private void setIntakeDeployed() {
     intakePivotController.setPosition(Degrees.of(148));
   }
-
-
-
 
 
   @Override
