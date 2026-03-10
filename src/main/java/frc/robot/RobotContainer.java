@@ -4,18 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import static edu.wpi.first.units.Units.Degrees;
-
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -90,9 +84,8 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    DriverStation.silenceJoystickConnectionWarning(true);
-    //Default command forces arm to go to 0 degrees
-    IntakeSubsystem.setDefaultCommand(IntakeSubsystem.setAngle(Degrees.of(0)));
+    // Default command forces arm to go to 0 degrees
+    m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.setAngle(Degrees.of(0)));
   }
 
   /**
@@ -179,12 +172,12 @@ public class RobotContainer {
 
     // Schedule `setAngle` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(IntakeSubsystem.setAngle(Degrees.of(-5)));
-    m_driverController.b().whileTrue(IntakeSubsystem.setAngle(Degrees.of(15)));
+    m_driverController.a().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(-5)));
+    m_driverController.b().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(15)));
     // Schedule `set` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.x().whileTrue(IntakeSubsystem.set(0.3));
-    m_driverController.y().whileTrue(IntakeSubsystem.set(-0.3));
+    m_driverController.x().whileTrue(m_intakeSubsystem.set(0.3));
+    m_driverController.y().whileTrue(m_intakeSubsystem.set(-0.3));
   }
 
   /**
