@@ -13,12 +13,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import static edu.wpi.first.units.Units.Degrees;
+
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,6 +33,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverController = new CommandXboxController(0);
@@ -86,6 +91,8 @@ public class RobotContainer {
     configureBindings();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+    //Default command forces arm to go to 0 degrees
+    IntakeSubsystem.setDefaultCommand(IntakeSubsystem.setAngle(Degrees.of(0)));
   }
 
   /**
@@ -170,6 +177,14 @@ public class RobotContainer {
     //         .and(isTest.negate())
     //         .whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
 
+    // Schedule `setAngle` when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.a().whileTrue(IntakeSubsystem.setAngle(Degrees.of(-5)));
+    m_driverController.b().whileTrue(IntakeSubsystem.setAngle(Degrees.of(15)));
+    // Schedule `set` when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.x().whileTrue(IntakeSubsystem.set(0.3));
+    m_driverController.y().whileTrue(IntakeSubsystem.set(-0.3));
   }
 
   /**
