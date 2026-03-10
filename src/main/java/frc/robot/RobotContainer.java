@@ -12,9 +12,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Shootersubsystem;
+import static edu.wpi.first.units.Units.RPM;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -26,8 +27,8 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final Shootersubsystem m_exampleSubsystem = new Shootersubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController m_driverController = new CommandXboxController(0);
@@ -86,6 +87,8 @@ public class RobotContainer {
 
     // Default command forces arm to go to 0 degrees
     m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.setAngle(Degrees.of(0)));
+    // Set the default command to force the shooter rest.
+    m_exampleSubsystem.setDefaultCommand(m_exampleSubsystem.set(0));
   }
 
   /**
@@ -108,6 +111,14 @@ public class RobotContainer {
     // D-pad up and down manually control the intake roller speed
     m_driverController.povUp().whileTrue(m_intakeSubsystem.set(0.3));
     m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.3));
+    // Schedule `setVelocity` when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.a().whileTrue(m_exampleSubsystem.setVelocity(RPM.of(60)));
+    m_driverController.b().whileTrue(m_exampleSubsystem.setVelocity(RPM.of(300)));
+    // Schedule 'set' when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.x().whileTrue(m_exampleSubsystem.set(0.3));
+    m_driverController.y().whileTrue(m_exampleSubsystem.set(-0.3));
   }
 
   /**

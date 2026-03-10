@@ -93,6 +93,12 @@
     {
       "guid": "78696e70757401000000000000000000",
       "useGamepad": true
+<<<<<<< HEAD
+=======
+    },
+    {
+      "guid": "Keyboard0"
+>>>>>>> c4a3f9c (Initial commit for shooter subsystem)
     }
   ]
 }
