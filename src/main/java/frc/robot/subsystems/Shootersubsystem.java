@@ -5,26 +5,19 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -62,13 +55,15 @@ public class Shootersubsystem extends SubsystemBase {
           .withIdleMode(MotorMode.COAST)
           .withStatorCurrentLimit(Amps.of(40));
 
-          // Vendor motor controller object
-          private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
+  // Vendor motor controller object
+  private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
 
-          // Create our SmartMotorController from our Spark and config with the NEO.
-          private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
+  // Create our SmartMotorController from our Spark and config with the NEO.
+  private SmartMotorController sparkSmartMotorController =
+      new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
 
-          private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
+  private final FlyWheelConfig shooterConfig =
+      new FlyWheelConfig(sparkSmartMotorController)
           // Diameter of the flywheel.
           .withDiameter(Inches.of(4))
           // Mass of the flywheel.
@@ -78,38 +73,46 @@ public class Shootersubsystem extends SubsystemBase {
           // Telemetry name and verbosity for the arm.
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
-          // Shooter Mechanism
-          private FlyWheel shooter = new FlyWheel(shooterConfig);
+  // Shooter Mechanism
+  private FlyWheel shooter = new FlyWheel(shooterConfig);
 
-          /**
-           * Gets the current velocity of the shooter.
-           * 
-           * @return Shooter velocity.
-           */
-          public AngularVelocity getVelocity() {return shooter.getSpeed();}
+  /**
+   * Gets the current velocity of the shooter.
+   *
+   * @return Shooter velocity.
+   */
+  public AngularVelocity getVelocity() {
+    return shooter.getSpeed();
+  }
 
-          /**
-           * Set the shooter velocity.
-           * 
-           * @param speed Speed to set.
-           * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
-           */
-          public Command setVelocity(AngularVelocity speed) {return shooter.run(speed);}
+  /**
+   * Set the shooter velocity.
+   *
+   * @param speed Speed to set.
+   * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
+   */
+  public Command setVelocity(AngularVelocity speed) {
+    return shooter.run(speed);
+  }
 
-          /**
-           * Set the shooter velocity setpoint.
-           * 
-           * @param speed Speed to set
-           */
-          public void setVelocitySetpoint (AngularVelocity speed) {shooter.setMechanismVelocitySetpoint(speed);}
+  /**
+   * Set the shooter velocity setpoint.
+   *
+   * @param speed Speed to set
+   */
+  public void setVelocitySetpoint(AngularVelocity speed) {
+    shooter.setMechanismVelocitySetpoint(speed);
+  }
 
-          /**
-           * Set the dutycycle of the shooter.
-           * 
-           * @param dutyCycle DutyCycle to set.
-           * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
-           */
-          public Command set(double dutyCycle) {return shooter.set(dutyCycle);}
+  /**
+   * Set the dutycycle of the shooter.
+   *
+   * @param dutyCycle DutyCycle to set.
+   * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
+   */
+  public Command set(double dutyCycle) {
+    return shooter.set(dutyCycle);
+  }
 
   /** Creates a new ExampleSubsystem. */
   public Shootersubsystem() {}
