@@ -7,6 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -15,7 +17,6 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Shootersubsystem;
-import static edu.wpi.first.units.Units.RPM;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
