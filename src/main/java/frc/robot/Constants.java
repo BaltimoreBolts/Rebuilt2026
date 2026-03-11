@@ -15,9 +15,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  
-  public static final double MAX_SPEED = Units.feetToMeters(14.5);
 
+  public static final double MAX_SPEED = Units.feetToMeters(14.5);
 
   /* The following classes are subjected to change based on CAN IDs */
 
