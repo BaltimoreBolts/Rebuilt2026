@@ -11,13 +11,17 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ShooterConstants;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -27,10 +31,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
-public class Shootersubsystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
+  // Vendor motor controller object
+  private SparkMax sparkLeaderPort =
+      new SparkMax(ShooterConstants.kShooterLeftFlyWheelPort, MotorType.kBrushless);
+  private SparkMax sparkFollowerPort =
+      new SparkMax(ShooterConstants.kShooterRightFlyWheelPort, MotorType.kBrushless);
+
   /** Creates a new ExampleSubsystem. */
   private SmartMotorControllerConfig smcConfig =
       new SmartMotorControllerConfig(this)
+          .withFollowers(Pair.of(sparkFollowerPort, true))
           .withControlMode(ControlMode.CLOSED_LOOP)
           // Feedback Constants (PID Constants)
           .withClosedLoopController(
@@ -55,12 +66,10 @@ public class Shootersubsystem extends SubsystemBase {
           .withIdleMode(MotorMode.COAST)
           .withStatorCurrentLimit(Amps.of(40));
 
-  // Vendor motor controller object
-  private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController sparkSmartMotorController =
-      new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
+      new SparkWrapper(sparkLeaderPort, DCMotor.getNEO(2), smcConfig);
 
   private final FlyWheelConfig shooterConfig =
       new FlyWheelConfig(sparkSmartMotorController)
@@ -75,6 +84,12 @@ public class Shootersubsystem extends SubsystemBase {
 
   // Shooter Mechanism
   private FlyWheel shooter = new FlyWheel(shooterConfig);
+
+  public ShooterSubsystem() {
+      sparkSmartMotorController.applyConfig(smcConfig);
+
+  }
+
 
   /**
    * Gets the current velocity of the shooter.
@@ -113,9 +128,6 @@ public class Shootersubsystem extends SubsystemBase {
   public Command set(double dutyCycle) {
     return shooter.set(dutyCycle);
   }
-
-  /** Creates a new ExampleSubsystem. */
-  public Shootersubsystem() {}
 
   /**
    * Example command factory method.
