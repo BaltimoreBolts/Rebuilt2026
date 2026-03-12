@@ -6,17 +6,17 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
-import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,7 +30,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  final CommandXboxController driverController = new CommandXboxController(0);
+  final CommandXboxController m_driverController = new CommandXboxController(0);
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase =
@@ -43,9 +43,9 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity =
       SwerveInputStream.of(
               drivebase.getSwerveDrive(),
-              () -> driverController.getLeftY() * -1,
-              () -> driverController.getLeftX() * -1)
-          .withControllerRotationAxis(() -> driverController.getRightX() * -1)
+              () -> m_driverController.getLeftY() * -1,
+              () -> m_driverController.getLeftX() * -1)
+          .withControllerRotationAxis(() -> m_driverController.getRightX() * -1)
           .deadband(OperatorConstants.DEADBAND)
           .scaleTranslation(0.8)
           .allianceRelativeControl(true);
@@ -54,7 +54,7 @@ public class RobotContainer {
   SwerveInputStream driveDirectAngle =
       driveAngularVelocity
           .copy()
-          .withControllerHeadingAxis(driverController::getRightX, driverController::getRightY)
+          .withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightY)
           .headingWhile(true);
 
   /** Clone's the angular velocity input stream and converts it to a robotRelative input stream. */
@@ -64,9 +64,9 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocityKeyboard =
       SwerveInputStream.of(
               drivebase.getSwerveDrive(),
-              () -> -driverController.getLeftY(),
-              () -> -driverController.getLeftX())
-          .withControllerRotationAxis(() -> driverController.getRawAxis(2))
+              () -> -m_driverController.getLeftY(),
+              () -> -m_driverController.getLeftX())
+          .withControllerRotationAxis(() -> m_driverController.getRawAxis(2))
           .deadband(OperatorConstants.DEADBAND)
           .scaleTranslation(0.8)
           .allianceRelativeControl(true);
@@ -75,8 +75,8 @@ public class RobotContainer {
       driveAngularVelocityKeyboard
           .copy()
           .withControllerHeadingAxis(
-              () -> Math.sin(driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2),
-              () -> Math.cos(driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2))
+              () -> Math.sin(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2),
+              () -> Math.cos(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2))
           .headingWhile(true);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -98,86 +98,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    // Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);
-    // Command driveSetpointGen =
-    // drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard =
-        drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-    // Command driveFieldOrientedAnglularVelocityKeyboard =
-    //         drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    // Command driveSetpointGenKeyboard =
-    //         drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_driverController.start().onTrue(m_intakeSubsystem.rezero());
 
-    // *************************
-    //    Simulation Commands
-    // *************************
-    if (RobotBase.isSimulation()) {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+    // Bumpers drop and intake or outake
+    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.backFeedAndRollCommand());
+    m_driverController.rightBumper().whileTrue(m_intakeSubsystem.deployAndRollCommand());
 
-      driverController
-          .start()
-          .onTrue(
-              Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverController.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-    }
-
-    // ************************
-    //    Test Mode Commands
-    // ************************
-    var isTest = new Trigger(DriverStation::isTest);
-    driverController
-        .x()
-        .and(isTest)
-        .whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    driverController.y().and(isTest).whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-    driverController.start().and(isTest).onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    driverController.back().and(isTest).whileTrue(drivebase.centerModulesCommand());
-    // driverController.leftBumper().and(isTest).onTrue(Commands.none());
-    // driverController.rightBumper().and(isTest).onTrue(Commands.none());
-
-    // **************************
-    //    Normal Mode Commands
-    // **************************
-
-    /*
-     * =========================================
-     * | DRIVER CONTROLS |
-     * =========================================
-     */
-
-    // Scores score state set by operator
-    // driverController.a().onTrue(new ScoreCommand(m_elevatorSubsystem, m_shooterSubsystem));
-
-    // Zero gyro -> reset position
-    driverController.povLeft().and(isTest.negate()).onTrue((Commands.runOnce(drivebase::zeroGyro)));
-
-    // driverController
-    //         .x()
-    //         .and(isTest.negate())
-    //         .onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    // driverController
-    //         .b()
-    //         .and(isTest.negate())
-    //         .whileTrue(
-    //                 drivebase.driveToPose(new Pose2d(new Translation2d(4, 4),
-    // Rotation2d.fromDegrees(0))));
-    // driverController
-    //         .povRight()
-    //         .and(isTest.negate())
-    //         .whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-
-    // Schedule `setAngle` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.a().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(-5)));
-    m_driverController.b().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(15)));
-    // Schedule `set` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.x().whileTrue(m_intakeSubsystem.set(0.3));
-    m_driverController.y().whileTrue(m_intakeSubsystem.set(-0.3));
+    // D-pad up and down manually control the intake roller speed
+    m_driverController.povUp().whileTrue(m_intakeSubsystem.set(0.3));
+    m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.3));
   }
 
   /**
