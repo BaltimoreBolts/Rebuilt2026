@@ -48,14 +48,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `setAngle` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.a().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(-5)));
-    m_driverController.b().whileTrue(m_intakeSubsystem.setAngle(Degrees.of(15)));
-    // Schedule `set` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.x().whileTrue(m_intakeSubsystem.set(0.3));
-    m_driverController.y().whileTrue(m_intakeSubsystem.set(-0.3));
+
+    m_driverController.start().onTrue(m_intakeSubsystem.rezero());
+
+    // Bumpers drop and intake or outake
+    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.backFeedAndRollCommand());
+    m_driverController.rightBumper().whileTrue(m_intakeSubsystem.deployAndRollCommand());
+
+    // D-pad up and down manually control the intake roller speed
+    m_driverController.povUp().whileTrue(m_intakeSubsystem.set(0.3));
+    m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.3));
   }
 
   /**
