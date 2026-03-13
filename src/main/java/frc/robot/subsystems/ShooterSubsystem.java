@@ -90,6 +90,29 @@ public class ShooterSubsystem extends SubsystemBase {
 
   }
 
+  public boolean atSpeed(AngularVelocity target) {
+  return Math.abs(getVelocity().minus(target).in(RPM)) < 100;
+  }
+
+  public Command shootCommand(AngularVelocity targetSpeed) {
+  return Commands.sequence(
+
+      // Step 1: Spin shooter to target speed
+      setVelocity(targetSpeed),
+
+      // Step 2: Wait until shooter reaches speed
+      new WaitUntilCommand(() -> 
+          Math.abs(getVelocity().minus(targetSpeed).in(RPM)) < 100
+      ),
+
+      // Step 3: Run kicker to feed the note
+      kicker.setVelocity(RPM.of(800)).withTimeout(0.5),
+
+      // Step 4: Stop the kicker
+      kicker.set(0)
+
+  ).withName("Shooter.Fire");
+}
 
   /**
    * Gets the current velocity of the shooter.
