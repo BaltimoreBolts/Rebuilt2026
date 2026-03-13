@@ -108,7 +108,7 @@ public final class Constants {
 
   public static class ShooterConstants {
     // positve -> intake
-    public static final int kShooterIntakePort = 13;
+    public static final int kShooterKickerPort = 13;
     public static final int kShooterLeftFlyWheelPort = 14;
     public static final int kShooterRightFlyWheelPort = 15;
     public static final int kShooterHoodPort = 16;
