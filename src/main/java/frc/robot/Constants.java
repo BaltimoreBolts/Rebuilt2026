@@ -78,10 +78,10 @@ public final class Constants {
     public static final int kFrontRightDrivePort = 4;
     public static final int kFrontRightRotPort = 5;
 
-    public static final int kBackLeftDrivePort = 6;
-    public static final int kBackLeftRotPort = 7;
-    public static final int kBackRightDrivePort = 8;
-    public static final int kBackRightRotPort = 9;
+    public static final int kBackLeftDrivePort = 8;
+    public static final int kBackLeftRotPort = 9;
+    public static final int kBackRightDrivePort = 6;
+    public static final int kBackRightRotPort = 7;
 
     /* Given future growth for the encoders */
     public static final int kFrontLeftEncoder = -999;
