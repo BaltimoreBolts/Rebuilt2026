@@ -154,6 +154,7 @@ public class RobotContainer {
 
     // Zero gyro
     driverController.povLeft().and(isTest.negate()).onTrue((Commands.runOnce(drivebase::zeroGyro)));
+    driverController.rightBumper().whileTrue(new AutoAimCommand(drivebase));
 
     // driverController
     //         .x()

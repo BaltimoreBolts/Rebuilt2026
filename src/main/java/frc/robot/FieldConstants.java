@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.Constants;
-import frc.robot.subsystems.Dashboard;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
@@ -30,8 +29,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Contains information for location of field element and other useful reference
@@ -130,7 +127,7 @@ public class FieldConstants {
         }
 
         public static Translation2d getHubTranslation2d() {
-            return Dashboard.getAlliance() == Alliance.Blue
+            return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
                     ? (BLUE_HUB_POSITION)
                     : (RED_HUB_POSITION);
         }
