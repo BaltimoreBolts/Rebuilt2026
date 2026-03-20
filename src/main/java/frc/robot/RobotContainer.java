@@ -153,7 +153,7 @@ public class RobotContainer {
     // Scores score state set by operator
     // driverController.a().onTrue(new ScoreCommand(m_elevatorSubsystem, m_shooterSubsystem));
 
-    // Zero gyro
+    // Zero gyro -> reset position
     driverController.povLeft().and(isTest.negate()).onTrue((Commands.runOnce(drivebase::zeroGyro)));
     driverController.rightBumper().whileTrue(new AutoAimCommand(drivebase));
 
