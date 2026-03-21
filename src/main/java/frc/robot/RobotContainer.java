@@ -16,10 +16,11 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
-import frc.robot.commands.ExampleCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,7 +31,8 @@ import frc.robot.commands.ExampleCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem m_exampleSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController m_driverController = new CommandXboxController(0);
@@ -90,7 +92,8 @@ public class RobotContainer {
     // Default command forces arm to go to 0 degrees
     m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.setAngle(Degrees.of(0)));
     // Set the default command to force the shooter rest.
-    m_exampleSubsystem.setDefaultCommand(m_exampleSubsystem.set(0));
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.set(0));
+    m_kickerSubsystem.setDefaultCommand(m_shooterSubsystem.set(0));
   }
 
   /**
@@ -103,6 +106,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    new Trigger(m_shooterSubsystem::exampleCondition)
+        .onTrue(new ExampleCommand(m_shooterSubsystem));
 
     m_driverController.start().onTrue(m_intakeSubsystem.rezero());
 
@@ -115,12 +121,12 @@ public class RobotContainer {
     m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.3));
     // Schedule `setVelocity` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(m_exampleSubsystem.setVelocity(RPM.of(60)));
-    m_driverController.b().whileTrue(m_exampleSubsystem.setVelocity(RPM.of(300)));
+    m_driverController.a().whileTrue(m_shooterSubsystem.setVelocity(RPM.of(60)));
+    m_driverController.b().whileTrue(m_shooterSubsystem.setVelocity(RPM.of(300)));
     // Schedule 'set' when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.x().whileTrue(m_exampleSubsystem.set(0.3));
-    m_driverController.y().whileTrue(m_exampleSubsystem.set(-0.3));
+    m_driverController.x().whileTrue(m_shooterSubsystem.set(0.3));
+    m_driverController.y().whileTrue(m_shooterSubsystem.set(-0.3));
   }
 
   /**
@@ -130,7 +136,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return Autos.exampleAuto(m_shooterSubsystem);
   }
 
   public void setMotorBrake(boolean brake) {

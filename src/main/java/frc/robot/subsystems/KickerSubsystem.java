@@ -5,14 +5,20 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -56,7 +62,7 @@ public class KickerSubsystem extends SubsystemBase {
       new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
 
   private final FlyWheelConfig kickerConfig =
-      new FlyWheelConfig(motor)
+      new FlyWheelConfig(sparkSmartMotorController)
           // Diameter of the flywheel.
           .withDiameter(Inches.of(4))
           // Mass of the flywheel.
@@ -68,6 +74,8 @@ public class KickerSubsystem extends SubsystemBase {
 
   // Kicker Mechanism
   private FlyWheel kicker = new FlyWheel(kickerConfig);
+
+  public KickerSubsystem() {}
 
   /**
    * Gets the current velocity of the kicker.
@@ -97,15 +105,6 @@ public class KickerSubsystem extends SubsystemBase {
     kicker.setMechanismVelocitySetpoint(speed);
   }
 
-  /**
-   * Set the kicker velocity.
-   *
-   * @param speed Speed to set.
-   * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
-   */
-  public Command setVelocity(AngularVelocity speed) {
-    return kicker.run(speed);
-  }
 
   /**
    * Set the dutycycle of the kicker.
@@ -116,9 +115,6 @@ public class KickerSubsystem extends SubsystemBase {
   public Command set(double dutyCycle) {
     return kicker.set(dutyCycle);
   }
-
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
 
   /**
    * Example command factory method.
@@ -147,12 +143,12 @@ public class KickerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    shooter.updateTelemetry();
+    kicker.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    shooter.simIterate();
+    kicker.simIterate();
   }
 }
