@@ -38,9 +38,13 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
+
+
+//intake roller -0.75
+//intake deploy+0.25, -0.25 retraction duty cycle
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 1.0;
+  private static final double INTAKE_SPEED = -0.75;
 
   // SparkMax controlling the intake roller
   // Add roller motor ID to Constants
@@ -54,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase {
           // Add shooter gearing
           .withGearing(
               new MechanismGearing(
-                  GearBox.fromReductionStages(1))) // Direct drive, adjust if geared
+                  GearBox.fromStages("4:1","18:60","50:18")))
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
           .withStatorCurrentLimit(Amps.of(40));
