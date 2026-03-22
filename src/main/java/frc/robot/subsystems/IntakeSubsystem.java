@@ -40,7 +40,8 @@ import yams.motorcontrollers.local.SparkWrapper;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 1.0;
+  private static final double INTAKE_SPEED = -0.75;
+  private static final double INTAKE_DEPLOY = 0.35;
 
   // SparkMax controlling the intake roller
   // Add roller motor ID to Constants
@@ -182,7 +183,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return Commands.run(
             () -> {
               setIntakeDeployed();
-              smc.setDutyCycle(INTAKE_SPEED);
+              smc.setDutyCycle(INTAKE_DEPLOY);
             },
             this)
         .finallyDo(
@@ -197,7 +198,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return Commands.run(
             () -> {
               setIntakeDeployed();
-              smc.setDutyCycle(-INTAKE_SPEED);
+              smc.setDutyCycle(-INTAKE_DEPLOY);
             },
             this)
         .finallyDo(

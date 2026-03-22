@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -28,7 +24,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
-public class KickerSubsystem extends SubsystemBase {
+public class IndexerSubsystem extends SubsystemBase {
 
   private SmartMotorControllerConfig smcConfig =
       new SmartMotorControllerConfig(this)
@@ -40,7 +36,7 @@ public class KickerSubsystem extends SubsystemBase {
           .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
           .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
           // Telemetry name and verbosity level
-          .withTelemetry("KickerMotor", TelemetryVerbosity.HIGH)
+          .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH)
           // Gearing from the motor rotor to final shaft.
           // In this example GearBox.fromReductionStages(3,4) is the same as
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
@@ -55,64 +51,64 @@ public class KickerSubsystem extends SubsystemBase {
 
   // Vendor motor controller object
   private SparkMax spark =
-      new SparkMax(Constants.ShooterConstants.kShooterKickerPort, MotorType.kBrushless);
+      new SparkMax(Constants.IndexerConstants.kIndexerPort, MotorType.kBrushless);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController sparkSmartMotorController =
       new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
 
-  private final FlyWheelConfig kickerConfig =
+  private final FlyWheelConfig indexerConfig =
       new FlyWheelConfig(sparkSmartMotorController)
           // Diameter of the flywheel.
           .withDiameter(Inches.of(4))
           // Mass of the flywheel.
           .withMass(Pounds.of(1))
-          // Maximum speed of the kicker.
+          // Maximum speed of the indexer.
           .withUpperSoftLimit(RPM.of(1000))
           // Telemetry name and verbosity for the arm.
-          .withTelemetry("KickerMech", TelemetryVerbosity.HIGH);
+          .withTelemetry("IndexerMech", TelemetryVerbosity.HIGH);
 
-  // Kicker Mechanism
-  private FlyWheel kicker = new FlyWheel(kickerConfig);
+  // indexer Mechanism
+  private FlyWheel indexer = new FlyWheel(indexerConfig);
 
-  public KickerSubsystem() {}
+  public IndexerSubsystem() {}
 
   /**
-   * Gets the current velocity of the kicker.
+   * Gets the current velocity of the indexer.
    *
-   * @return Kicker velocity.
+   * @return indexer velocity.
    */
   public AngularVelocity getVelocity() {
-    return kicker.getSpeed();
+    return indexer.getSpeed();
   }
 
   /**
-   * Set the kicker velocity.
+   * Set the indexer velocity.
    *
    * @param speed Speed to set.
    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
    */
   public Command setVelocity(AngularVelocity speed) {
-    return kicker.run(speed);
+    return indexer.run(speed);
   }
 
   /**
-   * Set the kicker velocity setpoint.
+   * Set the indexer velocity setpoint.
    *
    * @param speed Speed to set
    */
   public void setVelocitySetpoint(AngularVelocity speed) {
-    kicker.setMechanismVelocitySetpoint(speed);
+    indexer.setMechanismVelocitySetpoint(speed);
   }
 
   /**
-   * Set the dutycycle of the kicker.
+   * Set the dutycycle of the indexer.
    *
    * @param dutyCycle DutyCycle to set.
    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
    */
   public Command set(double dutyCycle) {
-    return kicker.set(dutyCycle);
+    return indexer.set(dutyCycle);
   }
 
   /**
@@ -142,12 +138,12 @@ public class KickerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    kicker.updateTelemetry();
+    indexer.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    kicker.simIterate();
+    indexer.simIterate();
   }
 }

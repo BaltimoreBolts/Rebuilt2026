@@ -11,8 +11,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.Pair;
@@ -68,7 +66,6 @@ public class ShooterSubsystem extends SubsystemBase {
           .withIdleMode(MotorMode.COAST)
           .withStatorCurrentLimit(Amps.of(40));
 
-
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController sparkSmartMotorController =
       new SparkWrapper(sparkLeaderPort, DCMotor.getNEO(2), smcConfig);
@@ -88,33 +85,37 @@ public class ShooterSubsystem extends SubsystemBase {
   private FlyWheel shooter = new FlyWheel(shooterConfig);
 
   public ShooterSubsystem() {
-      sparkSmartMotorController.applyConfig(smcConfig);
-
+    sparkSmartMotorController.applyConfig(smcConfig);
   }
 
   public boolean atSpeed(AngularVelocity target) {
-  return Math.abs(getVelocity().minus(target).in(RPM)) < 100;
+    return Math.abs(getVelocity().minus(target).in(RPM)) < 100;
   }
 
-  public Command shootCommand(AngularVelocity targetSpeed, KickerSubsystem kicker) {
-  return Commands.sequence(
+  public Command shootCommand(
+      AngularVelocity targetSpeed, KickerSubsystem kicker, IndexerSubsystem indexer) {
+    return Commands.sequence(
 
-      // Step 1: Spin shooter to target speed
-      setVelocity(targetSpeed),
+            // Step 1: Spin shooter to target speed
+            setVelocity(targetSpeed),
 
-      // Step 2: Wait until shooter reaches speed
-      new WaitUntilCommand(() -> 
-          Math.abs(getVelocity().minus(targetSpeed).in(RPM)) < 100
-      ),
+            // Step 2: Wait until shooter reaches speed
+            new WaitUntilCommand(() -> Math.abs(getVelocity().minus(targetSpeed).in(RPM)) < 100),
+            indexer.setVelocity(RPM.of(800)),
 
-      // Step 3: Run kicker to feed the note
-      kicker.setVelocity(RPM.of(800)).withTimeout(0.5),
+            // Step 3: Run kicker to feed the note
+            kicker.setVelocity(RPM.of(800)).withTimeout(0.5),
 
-      // Step 4: Stop the kicker
-      kicker.set(0)
+            // Step 4: Run the indexer
 
-  ).withName("Shooter.Fire");
-}
+            // Step 5: Stop the kicker
+            kicker.set(0),
+            indexer.set(0)
+
+            // Step 6: stop indexer
+            )
+        .withName("Shooter.Fire");
+  }
 
   /**
    * Gets the current velocity of the shooter.

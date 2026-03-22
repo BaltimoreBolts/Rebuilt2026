@@ -5,20 +5,19 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.wpilibj.Filesystem;
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -33,6 +32,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
+  private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController m_driverController = new CommandXboxController(0);
@@ -93,7 +93,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.setAngle(Degrees.of(0)));
     // Set the default command to force the shooter rest.
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.set(0));
-    m_kickerSubsystem.setDefaultCommand(m_shooterSubsystem.set(0));
+    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.set(0));
   }
 
   /**
@@ -107,8 +107,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_shooterSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_shooterSubsystem));
+    // new Trigger(m_shooterSubsystem::exampleCondition)
+    //     .onTrue(new ExampleCommand(m_shooterSubsystem));
 
     m_driverController.start().onTrue(m_intakeSubsystem.rezero());
 
@@ -117,16 +117,22 @@ public class RobotContainer {
     m_driverController.rightBumper().whileTrue(m_intakeSubsystem.deployAndRollCommand());
 
     // D-pad up and down manually control the intake roller speed
-    m_driverController.povUp().whileTrue(m_intakeSubsystem.set(0.3));
-    m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.3));
+    m_driverController.povUp().whileTrue(m_intakeSubsystem.set(0.35));
+    m_driverController.povDown().whileTrue(m_intakeSubsystem.set(-0.35));
     // Schedule `setVelocity` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(m_shooterSubsystem.setVelocity(RPM.of(60)));
-    m_driverController.b().whileTrue(m_shooterSubsystem.setVelocity(RPM.of(300)));
+    m_driverController
+        .leftTrigger()
+        .whileTrue(
+            m_shooterSubsystem.shootCommand(RPM.of(60), m_kickerSubsystem, m_indexerSubsystem));
+    m_driverController
+        .rightTrigger()
+        .whileTrue(
+            m_shooterSubsystem.shootCommand(RPM.of(300), m_kickerSubsystem, m_indexerSubsystem));
     // Schedule 'set' when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.x().whileTrue(m_shooterSubsystem.set(0.3));
-    m_driverController.y().whileTrue(m_shooterSubsystem.set(-0.3));
+    // m_driverController.x().whileTrue(m_shooterSubsystem.set(0.3));
+    // m_driverController.y().whileTrue(m_shooterSubsystem.set(-0.3));
   }
 
   /**
@@ -136,7 +142,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_shooterSubsystem);
+    return Commands.runOnce(drivebase::zeroGyro);
   }
 
   public void setMotorBrake(boolean brake) {

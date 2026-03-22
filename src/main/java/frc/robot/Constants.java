@@ -99,8 +99,8 @@ public final class Constants {
     public static final int kIntakeDeployPort = 11;
   }
 
-  public static class ClimberConstants {
-    public static final int kClimberPort = 12;
+  public static class IndexerConstants {
+    public static final int kIndexerPort = 12;
 
     /* Given future growth */
     public static final int kClimberDIO = -999;
